@@ -1,0 +1,251 @@
+﻿<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--
+<script type="text/javascript" src="js/vue.global.prod.js"></script>
+-->
+<script type="text/javascript" src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body >
+<fieldset>
+	<legend>app-1</legend>
+<div id="app-1">
+  <input type="text" v-Model='txt'>
+  <span >{{txt}}</span>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-2</legend>
+<div id="app-2">
+  <span v-bind:title="message">
+    Hover your mouse over me for a few seconds
+    to see my dynamically bound title!
+  </span>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-3</legend>
+<div id="app-3">
+  <span v-if="seen">Now you see me</span>
+	<button v-on:click='toggleInside'>切換</button>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>appImg</legend>
+<div id="appImg">
+  {{ message }}
+  <input type="text" v-Model='title'>
+	<div v-if="title == pwd">錯誤</div>
+	<img v-else v-bind:width="title" v-bind:src="img">
+<button v-on:click="toggleImg">next img</button>
+</div>
+</fieldset>
+
+
+<fieldset>
+	<legend>app-4</legend>
+<div id="app-4">
+  <ol>
+    <li v-for="todo in todos">
+      {{ todo.text }} {{todo.status}}
+    </li>
+  </ol>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-5</legend>
+<div id="app-5">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-6</legend>
+<div id="app-6">
+  <p>{{ message }}</p>
+  <input v-model="message">
+<button v-on:click="loadData">load json to app-6 </button>
+  	<div v-for="(value, key, index) in dat">
+		{{ index }} -- {{ key }}: {{ value }}
+	<br>
+<!--
+	<div v-for="value in dat">
+	  <ol>
+	{{ value }}
+	  </ol>
+-->
+	</div>
+
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-7</legend>
+<div id="app-7">
+  <ol>
+    <!--
+      Now we provide each todo-item with the todo object
+      it's representing, so that its content can be dynamic.
+      We also need to provide each component with a "key",
+      which will be explained later.
+    -->
+    <todo-item
+      v-for="item in groceryList"
+      v-bind:todo="item"
+      v-bind:key="item.id">
+    </todo-item>
+
+    <todo-item
+      v-for="item in groceryList1"
+      v-bind:todo="item">
+    </todo-item>
+	
+    <todo-item
+      v-for="item in groceryList2"
+      v-bind:todo="item">
+    </todo-item>
+  </ol>
+</div>
+</fieldset>
+
+<script language="javascript">
+const vm1= Vue.createApp({
+	data() {
+		return {
+			txt:''
+		}
+	}
+}).mount('#app-1');
+
+const vm2= Vue.createApp({
+	data() {
+		return {
+			message: 'You loaded this page on ' + new Date().toLocaleString()
+		}
+	}
+}).mount('#app-2');
+
+const vm3= Vue.createApp({
+	data() {
+		return {
+			seen: true
+		}
+	},
+	methods: {
+		toggleInside: function () {
+			this.seen = ! this.seen;
+		}
+	}
+}).mount("#app-3");
+
+const vmImg= Vue.createApp({
+	data() {
+		return {
+			message: 'Hello Vue!',
+			title: 98,
+			pwd: 1234,
+			img: "img/dog.jfif",
+			imgList: ["img/dog.jfif","img/dog1.webp","img/dog2.webp"],
+			idx: 0
+		}
+	},
+	methods: {
+		toggleImg: function () {		
+			this.idx++;
+			if (this.idx>2) this.idx=0;
+			this.img=this.imgList[this.idx];
+		}
+	}
+}).mount('#appImg');
+
+const vm4= Vue.createApp({
+	data() {
+		return {
+			todos: [
+				{ text: 'Learn JavaScript', status: "ok" },
+				{ text: 'Learn Vue', status:"failed"},
+				{ text: 'Build something awesome' , status:"not yet"}
+			]
+		}
+	}
+}).mount("#app-4");
+
+vm4.todos.push({ text: 'New item' })
+
+const vm5= Vue.createApp({
+	data() {
+		return {
+			message: 'Hello Vue.js!'
+		}
+	},
+	methods: {
+		reverseMessage: function () {
+			this.message = this.message.split('').reverse().join('')
+		}
+	}
+})
+vm5.mount("#app-5");
+
+const vm6= Vue.createApp({
+	data() {
+		return {
+			message: 'Hello Vue!',
+			dat: []
+		}
+	},
+	methods: {
+		loadData: function () {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('json.php')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				//we are inside the callback function, now `this` means the function, not vm6
+				//we will use `that` to access vm6
+				that.dat = myJson;
+				//vm6.dat = myJson;
+			});
+		}
+	}
+}).mount("#app-6");
+
+// Define a new component called todo-item
+
+const vm7= Vue.createApp({
+  data() {
+	return {
+		groceryList: [
+		  { id: 0, text: 'Vegetables' },
+		  { id: 1, text: 'Cheese' },
+		  { id: 2, text: 'Whatever else humans are supposed to eat' }
+		],
+		groceryList1: [
+		  { text: 'John' },
+		  { text: 'Jack' },
+		  { text: 'Jordan' }
+		],
+		groceryList2: [
+		  { text: 'Apple' },
+		  { text: 'Banana' },
+		  { text: 'Orange' }
+		],
+	}
+  }
+})
+vm7.component('todo-item', {
+  // The todo-item component now accepts a
+  // "prop", which is like a custom attribute.
+  // This prop is called todo.
+  props: ['todo'],
+  template: '<li>{{ todo.text }}</li>'
+})
+vm7.mount("#app-7")
+</script>
+
+</body></html>
